@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mkdir:*)",
+      "Bash(rmdir:*)",
+      "Bash(node:*)",
+      "Bash(xcopy:*)",
+      "Bash(powershell:*)",
+      "Bash(dir)",
+      "Bash(rm:*)",
+      "Bash(npx:*)",
+      "Bash(npm install:*)",
+      "Bash(npm run build:*)",
+      "Bash(npm uninstall:*)",
+      "Bash(dir:*)",
+      "Bash(ls:*)",
+      "Bash(find:*)",
+      "Bash(mvn clean:*)"
+    ],
+    "deny": []
+  }
+}

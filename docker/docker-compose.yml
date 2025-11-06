@@ -1,0 +1,116 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: basis-postgres
+    environment:
+      POSTGRES_DB: basis_db
+      POSTGRES_USER: basis_user
+      POSTGRES_PASSWORD: basis_password
+      PGDATA: /var/lib/postgresql/data/pgdata
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    networks:
+      - basis-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U basis_user -d basis_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  # Spring Boot Backend
+  backend:
+    build:
+      context: ..
+      dockerfile: backend/Dockerfile
+    container_name: basis-backend
+    environment:
+      # Database Configuration
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: basis_db
+      DB_USERNAME: basis_user
+      DB_PASSWORD: basis_password
+      
+      # Server Configuration
+      SERVER_PORT: 8080
+      
+      # JVM Configuration
+      JAVA_OPTS: "-Xmx512m -Xms256m"
+      
+      # Spring Profiles
+      SPRING_PROFILES_ACTIVE: docker
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - basis-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    restart: unless-stopped
+    volumes:
+      - backend_logs:/app/logs
+
+  # Angular Frontend
+  frontend:
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile
+    container_name: basis-frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - basis-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:80/"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
+    restart: unless-stopped
+
+  # PgAdmin (Optional - for database management)
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: basis-pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@basis.com
+      PGADMIN_DEFAULT_PASSWORD: admin123
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgres
+    networks:
+      - basis-network
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    restart: unless-stopped
+    profiles:
+      - admin
+
+volumes:
+  postgres_data:
+    driver: local
+  pgadmin_data:
+    driver: local
+  backend_logs:
+    driver: local
+
+networks:
+  basis-network:
+    driver: bridge
