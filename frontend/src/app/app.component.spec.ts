@@ -1,6 +1,5 @@
 import { TestBed } from '@angular/core/testing';
 import { AppComponent } from './app.component';
-import { UserListComponent } from './features/users/user-list/user-list.component';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { MessageService, ConfirmationService } from 'primeng/api';
 

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TableModule } from 'primeng/table';
 import { ButtonModule } from 'primeng/button';
@@ -45,12 +45,12 @@ export class UserListComponent implements OnInit {
   isEditMode = false;
   currentUserUuid?: string;
 
-  constructor(
-    private userService: UserService,
-    private fb: FormBuilder,
-    private messageService: MessageService,
-    private confirmationService: ConfirmationService
-  ) {
+  private userService = inject(UserService);
+  private fb = inject(FormBuilder);
+  private messageService = inject(MessageService);
+  private confirmationService = inject(ConfirmationService);
+
+  constructor() {
     this.initForm();
   }
 
@@ -75,7 +75,7 @@ export class UserListComponent implements OnInit {
         this.users = users;
         this.loading = false;
       },
-      error: (error) => {
+      error: () => {
         this.messageService.add({
           severity: 'error',
           summary: 'Error',
@@ -120,7 +120,7 @@ export class UserListComponent implements OnInit {
             this.displayDialog = false;
             this.loadUsers();
           },
-          error: (error) => {
+          error: (error: Error) => {
             this.messageService.add({
               severity: 'error',
               summary: 'Error',
@@ -139,7 +139,7 @@ export class UserListComponent implements OnInit {
             this.displayDialog = false;
             this.loadUsers();
           },
-          error: (error) => {
+          error: (error: Error) => {
             this.messageService.add({
               severity: 'error',
               summary: 'Error',
@@ -167,7 +167,7 @@ export class UserListComponent implements OnInit {
               });
               this.loadUsers();
             },
-            error: (error) => {
+            error: () => {
               this.messageService.add({
                 severity: 'error',
                 summary: 'Error',

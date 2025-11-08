@@ -2,18 +2,18 @@
   <div class="card">
     <div class="card-header flex justify-content-between align-items-center mb-4">
       <h2 class="text-2xl font-bold text-900">User Management</h2>
-      <p-button 
-        label="Add User" 
-        icon="pi pi-plus" 
+      <p-button
+        label="Add User"
+        icon="pi pi-plus"
         (onClick)="showAddDialog()"
         class="p-button-success">
       </p-button>
     </div>
 
-    <p-table 
-      [value]="users" 
+    <p-table
+      [value]="users"
       [loading]="loading"
-      [paginator]="true" 
+      [paginator]="true"
       [rows]="10"
       [showCurrentPageReport]="true"
       currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
@@ -21,22 +21,22 @@
       [globalFilterFields]="['username','email','firstName','lastName']"
       styleClass="p-datatable-striped"
       #dt>
-      
+
       <ng-template pTemplate="caption">
         <div class="flex justify-content-between align-items-center">
           <span class="text-xl font-semibold">Users</span>
           <span class="p-input-icon-left">
             <i class="pi pi-search"></i>
-            <input 
-              pInputText 
-              type="text" 
+            <input
+              pInputText
+              type="text"
               #searchInput
-              (input)="dt.filterGlobal(searchInput.value, 'contains')" 
-              placeholder="Search..." />
+              (input)="dt.filterGlobal(searchInput.value, 'contains')"
+              placeholder="Search...." />
           </span>
         </div>
       </ng-template>
-      
+
       <ng-template pTemplate="header">
         <tr>
           <th pSortableColumn="username">
@@ -60,7 +60,7 @@
           <th>Actions</th>
         </tr>
       </ng-template>
-      
+
       <ng-template pTemplate="body" let-user>
         <tr>
           <td>{{ user.username }}</td>
@@ -68,22 +68,22 @@
           <td>{{ user.firstName || '-' }}</td>
           <td>{{ user.lastName || '-' }}</td>
           <td>
-            <p-tag 
-              [value]="user.active ? 'Active' : 'Inactive'" 
+            <p-tag
+              [value]="user.active ? 'Active' : 'Inactive'"
               [severity]="user.active ? 'success' : 'danger'">
             </p-tag>
           </td>
           <td>{{ user.createdAt | date:'short' }}</td>
           <td>
             <div class="flex gap-2">
-              <p-button 
-                icon="pi pi-pencil" 
+              <p-button
+                icon="pi pi-pencil"
                 class="p-button-rounded p-button-text p-button-warning"
                 pTooltip="Edit User"
                 (onClick)="showEditDialog(user)">
               </p-button>
-              <p-button 
-                icon="pi pi-trash" 
+              <p-button
+                icon="pi pi-trash"
                 class="p-button-rounded p-button-text p-button-danger"
                 pTooltip="Delete User"
                 (onClick)="confirmDelete(user)">
@@ -92,7 +92,7 @@
           </td>
         </tr>
       </ng-template>
-      
+
       <ng-template pTemplate="emptymessage">
         <tr>
           <td colspan="7" class="text-center">
@@ -105,79 +105,79 @@
 </div>
 
 <!-- User Dialog -->
-<p-dialog 
-  [(visible)]="displayDialog" 
+<p-dialog
+  [(visible)]="displayDialog"
   [header]="isEditMode ? 'Edit User' : 'Add User'"
-  [modal]="true" 
+  [modal]="true"
   [style]="{width: '500px'}"
-  [draggable]="false" 
+  [draggable]="false"
   [resizable]="false">
-  
+
   <form [formGroup]="userForm" (ngSubmit)="saveUser()">
     <div class="grid">
       <div class="col-12">
         <label for="username" class="block text-900 font-medium mb-2">Username *</label>
-        <input 
+        <input
           id="username"
-          type="text" 
-          pInputText 
+          type="text"
+          pInputText
           formControlName="username"
           class="w-full mb-3"
           [class.ng-invalid]="userForm.get('username')?.invalid && userForm.get('username')?.touched" />
-        <small 
+        <small
           class="p-error block"
           *ngIf="userForm.get('username')?.invalid && userForm.get('username')?.touched">
           Username is required (min 3 characters).
         </small>
       </div>
-      
+
       <div class="col-12">
         <label for="email" class="block text-900 font-medium mb-2">Email *</label>
-        <input 
+        <input
           id="email"
-          type="email" 
-          pInputText 
+          type="email"
+          pInputText
           formControlName="email"
           class="w-full mb-3"
           [class.ng-invalid]="userForm.get('email')?.invalid && userForm.get('email')?.touched" />
-        <small 
+        <small
           class="p-error block"
           *ngIf="userForm.get('email')?.invalid && userForm.get('email')?.touched">
           Please enter a valid email address.
         </small>
       </div>
-      
+
       <div class="col-6">
         <label for="firstName" class="block text-900 font-medium mb-2">First Name</label>
-        <input 
+        <input
           id="firstName"
-          type="text" 
-          pInputText 
+          type="text"
+          pInputText
           formControlName="firstName"
           class="w-full mb-3" />
       </div>
-      
+
       <div class="col-6">
         <label for="lastName" class="block text-900 font-medium mb-2">Last Name</label>
-        <input 
+        <input
           id="lastName"
-          type="text" 
-          pInputText 
+          type="text"
+          pInputText
           formControlName="lastName"
           class="w-full mb-3" />
       </div>
     </div>
-    
+
     <div class="flex justify-content-end gap-2 mt-4">
-      <p-button 
-        label="Cancel" 
-        icon="pi pi-times" 
+      <p-button
+        label="Cancel"
+        icon="pi pi-times"
         class="p-button-text"
         (onClick)="displayDialog = false">
       </p-button>
-      <p-button 
-        label="Save" 
-        icon="pi pi-check" 
+      <p-button
+        label="Save"
+        icon="pi pi-check"
         type="submit"
         [disabled]="userForm.invalid">
       </p-button>
