@@ -120,7 +120,7 @@ export class UserListComponent implements OnInit {
             this.displayDialog = false;
             this.loadUsers();
           },
-          error: (error: any) => {
+          error: (error: Error) => {
             this.messageService.add({
               severity: 'error',
               summary: 'Error',
@@ -139,7 +139,7 @@ export class UserListComponent implements OnInit {
             this.displayDialog = false;
             this.loadUsers();
           },
-          error: (error: any) => {
+          error: (error: Error) => {
             this.messageService.add({
               severity: 'error',
               summary: 'Error',
