@@ -2,12 +2,15 @@
 FROM maven:3.9-eclipse-temurin-17 AS build
 WORKDIR /app
 
-# Copy pom and source files
-COPY pom.xml ./
-COPY src ./src
+# Copy parent pom
+COPY pom.xml /app/pom.xml
+
+# Copy backend module
+COPY backend/pom.xml /app/backend/pom.xml
+COPY backend/src /app/backend/src
 
 # Build the application
-RUN mvn clean package -DskipTests
+RUN mvn clean package -DskipTests -pl backend -am
 
 # Runtime stage
 FROM eclipse-temurin:17-jre-alpine
@@ -19,7 +22,7 @@ RUN addgroup -g 1000 spring && adduser -u 1000 -G spring -s /bin/sh -D spring
 WORKDIR /app
 
 # Copy jar from build stage
-COPY --from=build /app/target/*.jar app.jar
+COPY --from=build /app/backend/target/*.jar app.jar
 
 # Change ownership
 RUN chown -R spring:spring /app
