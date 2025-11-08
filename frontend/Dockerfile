@@ -3,10 +3,10 @@ FROM node:18-alpine AS build
 WORKDIR /app
 
 # Copy package files
-COPY package*.json ./
+COPY package.json ./
 
 # Install dependencies
-RUN npm ci
+RUN npm install
 
 # Copy source code
 COPY . .
@@ -21,8 +21,8 @@ WORKDIR /app
 # Install serve globally
 RUN npm install -g serve
 
-# Copy the built app from build stage (Angular 17+ puts files in browser subdirectory)
-COPY --from=build /app/dist/basis-frontend/browser /app
+# Copy the built app from build stage
+COPY --from=build /app/dist/basis-frontend /app
 
 # Expose port
 EXPOSE 80
