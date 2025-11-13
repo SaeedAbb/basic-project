@@ -15,7 +15,22 @@
       "Bash(dir:*)",
       "Bash(ls:*)",
       "Bash(find:*)",
-      "Bash(mvn clean:*)"
+      "Bash(mvn clean:*)",
+      "Bash(gh run list:*)",
+      "WebFetch(domain:github.com)",
+      "Bash(./mvnw test:*)",
+      "Bash(mvn test:*)",
+      "Bash(del nul)",
+      "Bash(npm run lint)",
+      "Bash(npm run test:ci:*)",
+      "Bash(java:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(git pull:*)",
+      "WebFetch(domain:angular.dev)",
+      "Bash(git checkout:*)",
+      "Bash(npm view:*)"
     ],
     "deny": []
   }
