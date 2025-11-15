@@ -6,7 +6,7 @@ A comprehensive monorepo template for building modern web applications with Spri
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
 ![Java](https://img.shields.io/badge/Java-17-orange.svg)
 ![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.2.0-green.svg)
-![Angular](https://img.shields.io/badge/Angular-17-red.svg)
+![Angular](https://img.shields.io/badge/Angular-20-red.svg)
 
 ## 🚀 Features
 
@@ -21,7 +21,7 @@ A comprehensive monorepo template for building modern web applications with Spri
 - **Containerization**: Multi-stage Docker builds
 
 ### Frontend (Angular)
-- **Framework**: Angular 17 with standalone components
+- **Framework**: Angular 20 with standalone components
 - **UI Library**: PrimeNG with 90+ components
 - **Styling**: PrimeFlex CSS utilities and SCSS
 - **HTTP Client**: Angular HttpClient with interceptors
@@ -40,7 +40,7 @@ A comprehensive monorepo template for building modern web applications with Spri
 ## 📋 Prerequisites
 
 - **Java 17** or higher
-- **Node.js 18** or higher
+- **Node.js 20** or higher
 - **Docker** and **Docker Compose**
 - **Maven 3.8+** (included in wrapper)
 - **Git** for version control
@@ -240,12 +240,12 @@ The project includes a comprehensive CI/CD pipeline that:
 
 1. **On Pull Request**:
    - Runs unit tests for backend and frontend
-   - Performs security scanning
+   - Performs security scanning with Trivy
    - Runs integration tests
    - Blocks merge if tests fail
 
 2. **On Main Branch**:
-   - Builds and pushes Docker images to registry
+   - Builds and pushes Docker images to GitHub Container Registry (ghcr.io)
    - Runs full test suite
    - Creates deployment artifacts
 
