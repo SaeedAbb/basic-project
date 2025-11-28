@@ -6,11 +6,36 @@
         <h1 class="text-3xl font-bold text-primary m-0">{{ title }}</h1>
         <p-tag value="v1.0.0" severity="info"></p-tag>
       </div>
-      <nav>
+      <nav class="flex align-items-center gap-2">
+        <span *ngIf="isLoggedIn && username" class="text-600">
+          Welcome, {{ username }}
+        </span>
         <p-button 
           label="API Docs" 
           icon="pi pi-book" 
-          class="p-button-outlined p-button-sm">
+          styleClass="p-button-outlined p-button-sm"
+          (click)="window.open('http://localhost:8080/swagger-ui.html', '_blank')">
+        </p-button>
+        <p-button 
+          *ngIf="!isLoggedIn"
+          label="Login" 
+          icon="pi pi-sign-in" 
+          styleClass="p-button-sm"
+          (click)="login()">
+        </p-button>
+        <p-button 
+          *ngIf="!isLoggedIn"
+          label="Register" 
+          icon="pi pi-user-plus" 
+          styleClass="p-button-outlined p-button-sm"
+          (click)="register()">
+        </p-button>
+        <p-button 
+          *ngIf="isLoggedIn"
+          label="Logout" 
+          icon="pi pi-sign-out" 
+          styleClass="p-button-danger p-button-sm"
+          (click)="logout()">
         </p-button>
       </nav>
     </div>

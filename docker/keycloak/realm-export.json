@@ -1,0 +1,190 @@
+{
+  "realm": "basis-realm",
+  "enabled": true,
+  "registrationAllowed": true,
+  "registrationEmailAsUsername": true,
+  "rememberMe": true,
+  "verifyEmail": true,
+  "loginWithEmailAllowed": true,
+  "duplicateEmailsAllowed": false,
+  "resetPasswordAllowed": true,
+  "editUsernameAllowed": false,
+  "bruteForceProtected": true,
+  "permanentLockout": false,
+  "maxFailureWaitSeconds": 900,
+  "minimumQuickLoginWaitSeconds": 60,
+  "waitIncrementSeconds": 60,
+  "quickLoginCheckMilliSeconds": 1000,
+  "maxDeltaTimeSeconds": 43200,
+  "failureFactor": 30,
+  "defaultRoles": ["default-roles-basis-realm"],
+  "requiredCredentials": ["password"],
+  "otpPolicyType": "totp",
+  "otpPolicyAlgorithm": "HmacSHA1",
+  "otpPolicyInitialCounter": 0,
+  "otpPolicyDigits": 6,
+  "otpPolicyLookAheadWindow": 1,
+  "otpPolicyPeriod": 30,
+  "clients": [
+    {
+      "clientId": "basis-frontend",
+      "enabled": true,
+      "publicClient": true,
+      "redirectUris": [
+        "http://localhost:4200/*",
+        "http://localhost/*"
+      ],
+      "webOrigins": [
+        "http://localhost:4200",
+        "http://localhost"
+      ],
+      "protocol": "openid-connect",
+      "fullScopeAllowed": true,
+      "defaultClientScopes": [
+        "web-origins",
+        "profile",
+        "roles",
+        "email"
+      ],
+      "optionalClientScopes": [
+        "address",
+        "phone",
+        "offline_access"
+      ]
+    },
+    {
+      "clientId": "basis-backend",
+      "enabled": true,
+      "bearerOnly": true,
+      "protocol": "openid-connect",
+      "fullScopeAllowed": true,
+      "defaultClientScopes": [
+        "web-origins",
+        "profile",
+        "roles",
+        "email"
+      ]
+    }
+  ],
+  "identityProviders": [
+    {
+      "alias": "google",
+      "internalId": "google",
+      "providerId": "google",
+      "enabled": true,
+      "updateProfileFirstLoginMode": "on",
+      "trustEmail": true,
+      "storeToken": false,
+      "addReadTokenRoleOnCreate": false,
+      "authenticateByDefault": false,
+      "linkOnly": false,
+      "firstBrokerLoginFlowAlias": "first broker login",
+      "config": {
+        "hideOnLoginPage": "false",
+        "clientId": "${GOOGLE_CLIENT_ID}",
+        "clientSecret": "${GOOGLE_CLIENT_SECRET}",
+        "hostedDomain": "",
+        "userIp": "false",
+        "offlineAccess": "false"
+      }
+    }
+  ],
+  "identityProviderMappers": [
+    {
+      "name": "email",
+      "identityProviderAlias": "google",
+      "identityProviderMapper": "oidc-user-attribute-idp-mapper",
+      "config": {
+        "claim": "email",
+        "user.attribute": "email"
+      }
+    },
+    {
+      "name": "first name",
+      "identityProviderAlias": "google",
+      "identityProviderMapper": "oidc-user-attribute-idp-mapper",
+      "config": {
+        "claim": "given_name",
+        "user.attribute": "firstName"
+      }
+    },
+    {
+      "name": "last name",
+      "identityProviderAlias": "google",
+      "identityProviderMapper": "oidc-user-attribute-idp-mapper",
+      "config": {
+        "claim": "family_name",
+        "user.attribute": "lastName"
+      }
+    }
+  ],
+  "roles": {
+    "realm": [
+      {
+        "name": "user",
+        "composite": false,
+        "clientRole": false,
+        "containerId": "basis-realm"
+      },
+      {
+        "name": "admin",
+        "composite": false,
+        "clientRole": false,
+        "containerId": "basis-realm"
+      }
+    ]
+  },
+  "defaultRole": {
+    "name": "default-roles-basis-realm",
+    "composite": true,
+    "clientRole": false,
+    "containerId": "basis-realm"
+  },
+  "users": [
+    {
+      "username": "admin@basis.com",
+      "enabled": true,
+      "emailVerified": true,
+      "email": "admin@basis.com",
+      "firstName": "Admin",
+      "lastName": "User",
+      "realmRoles": ["admin", "user"],
+      "credentials": [
+        {
+          "type": "password",
+          "value": "admin123",
+          "temporary": false
+        }
+      ]
+    },
+    {
+      "username": "user@basis.com",
+      "enabled": true,
+      "emailVerified": true,
+      "email": "user@basis.com",
+      "firstName": "Test",
+      "lastName": "User",
+      "realmRoles": ["user"],
+      "credentials": [
+        {
+          "type": "password",
+          "value": "user123",
+          "temporary": false
+        }
+      ]
+    }
+  ],
+  "smtpServer": {
+    "host": "mailhog",
+    "port": "1025",
+    "from": "noreply@basis.com",
+    "fromDisplayName": "Basis Project",
+    "ssl": "false",
+    "starttls": "false",
+    "auth": "false"
+  },
+  "eventsEnabled": true,
+  "eventsListeners": ["jboss-logging"],
+  "adminEventsEnabled": true,
+  "adminEventsDetailsEnabled": true
+}
