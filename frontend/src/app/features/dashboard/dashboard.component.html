@@ -1,0 +1,45 @@
+<!-- Main Application Container -->
+<div class="app-container">
+  <header class="app-header">
+    <div class="container flex justify-content-between align-items-center py-3">
+      <div class="flex align-items-center gap-3">
+        <h1 class="text-3xl font-bold text-primary m-0">{{ title }}</h1>
+        <p-tag value="v1.0.0" severity="info"></p-tag>
+      </div>
+      <nav class="flex align-items-center gap-2">
+        <span *ngIf="isLoggedIn && username" class="text-600">
+          Welcome, {{ username }}
+        </span>
+        <p-button 
+          label="API Docs" 
+          icon="pi pi-book" 
+          styleClass="p-button-outlined p-button-sm"
+          (click)="window.open(swaggerUrl, '_blank')">
+        </p-button>
+        <p-button 
+          label="Logout" 
+          icon="pi pi-sign-out" 
+          styleClass="p-button-danger p-button-sm"
+          (click)="logout()">
+        </p-button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="app-main">
+    <div class="container py-4">
+      <app-user-list></app-user-list>
+    </div>
+  </main>
+
+  <footer class="app-footer">
+    <div class="container text-center py-3">
+      <p class="text-sm text-600 m-0">
+        Built with Spring Boot, Angular & PrimeNG | 
+        <a href="https://github.com" target="_blank" class="text-primary no-underline">
+          <i class="pi pi-github"></i> View on GitHub
+        </a>
+      </p>
+    </div>
+  </footer>
+</div>

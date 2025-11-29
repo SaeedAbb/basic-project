@@ -1,13 +1,26 @@
 import { TestBed } from '@angular/core/testing';
 import { AppComponent } from './app.component';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { MessageService, ConfirmationService } from 'primeng/api';
+import { Router } from '@angular/router';
+import { KeycloakService } from 'keycloak-angular';
 
 describe('AppComponent', () => {
+  let mockRouter: jasmine.SpyObj<Router>;
+  let mockKeycloakService: jasmine.SpyObj<KeycloakService>;
+
   beforeEach(async () => {
+    mockRouter = jasmine.createSpyObj('Router', ['navigate'], {
+      events: { pipe: () => ({ subscribe: () => { /* Empty handler for testing */ } }) },
+      url: '/'
+    });
+    
+    mockKeycloakService = jasmine.createSpyObj('KeycloakService', ['isLoggedIn']);
+
     await TestBed.configureTestingModule({
-      imports: [AppComponent, HttpClientTestingModule],
-      providers: [MessageService, ConfirmationService]
+      imports: [AppComponent],
+      providers: [
+        { provide: Router, useValue: mockRouter },
+        { provide: KeycloakService, useValue: mockKeycloakService }
+      ]
     }).compileComponents();
   });
 
@@ -17,16 +30,9 @@ describe('AppComponent', () => {
     expect(app).toBeTruthy();
   });
 
-  it(`should have the 'Basis Project' title`, () => {
+  it('should initialize with loading state', () => {
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.componentInstance;
-    expect(app.title).toEqual('Basis Project');
-  });
-
-  it('should render title in header', () => {
-    const fixture = TestBed.createComponent(AppComponent);
-    fixture.detectChanges();
-    const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h1')?.textContent).toContain('Basis Project');
+    expect(app.isLoading).toBeTruthy();
   });
 });

@@ -1,46 +1,46 @@
-import { Component, inject } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Component, OnInit, inject } from '@angular/core';
+import { Router, RouterOutlet, NavigationEnd } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { ButtonModule } from 'primeng/button';
-import { TagModule } from 'primeng/tag';
-import { UserListComponent } from './features/users/user-list/user-list.component';
-import { AuthService } from './core/services/auth.service';
+import { KeycloakAuthService } from './core/services/keycloak-auth.service';
+import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-root',
   standalone: true,
   imports: [
     CommonModule,
-    RouterOutlet,
-    ButtonModule,
-    TagModule,
-    UserListComponent
+    RouterOutlet
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
-export class AppComponent {
-  title = 'Basis Project';
-  authService = inject(AuthService);
-  window = window;
+export class AppComponent implements OnInit {
+  private readonly keycloakAuthService = inject(KeycloakAuthService);
+  private readonly router = inject(Router);
+  
+  isLoading = true;
 
-  get isLoggedIn(): boolean {
-    return this.authService.isLoggedIn();
+  ngOnInit() {
+    setTimeout(() => {
+      this.checkAuthenticationAndRoute();
+      this.isLoading = false;
+    }, 100);
+
+    this.router.events
+      .pipe(filter(event => event instanceof NavigationEnd))
+      .subscribe(() => {
+        this.checkAuthenticationAndRoute();
+      });
   }
 
-  get username(): string | undefined {
-    return this.authService.getUsername();
-  }
+  private checkAuthenticationAndRoute() {
+    const isLoggedIn = this.keycloakAuthService.isAuthenticated();
+    const currentUrl = this.router.url;
 
-  login(): void {
-    this.authService.login();
-  }
-
-  logout(): void {
-    this.authService.logout();
-  }
-
-  register(): void {
-    this.authService.register();
+    if (isLoggedIn && (currentUrl.startsWith('/auth') || currentUrl === '/')) {
+      this.router.navigate(['/dashboard']);
+    } else if (!isLoggedIn && !currentUrl.startsWith('/auth')) {
+      this.router.navigate(['/auth']);
+    }
   }
 }

@@ -1,38 +1,39 @@
 import { inject } from '@angular/core';
-import { Router, ActivatedRouteSnapshot, RouterStateSnapshot, CanActivateFn } from '@angular/router';
-import { KeycloakService } from 'keycloak-angular';
+import { Router, ActivatedRouteSnapshot, CanActivateFn } from '@angular/router';
+import { KeycloakAuthService } from '../services/keycloak-auth.service';
 
-export const authGuard: CanActivateFn = async (route: ActivatedRouteSnapshot, state: RouterStateSnapshot) => {
+export const authGuard: CanActivateFn = (route: ActivatedRouteSnapshot) => {
   const router = inject(Router);
-  const keycloakService = inject(KeycloakService);
+  const keycloakAuthService = inject(KeycloakAuthService);
 
-  // Check if user is authenticated
-  const isLoggedIn = keycloakService.isLoggedIn();
-  
-  if (!isLoggedIn) {
-    // Redirect to login
-    await keycloakService.login({
-      redirectUri: window.location.origin + state.url,
-    });
+  if (!keycloakAuthService.isAuthenticated()) {
+    router.navigate(['/auth/login']);
     return false;
   }
 
-  // Get the roles required from the route
   const requiredRoles = route.data['roles'] as string[];
-
-  // Allow the user to proceed if no additional roles are required
   if (!requiredRoles || requiredRoles.length === 0) {
     return true;
   }
 
-  // Check if user has required roles
-  const userRoles = keycloakService.getUserRoles();
-  const hasRequiredRoles = requiredRoles.every(role => userRoles.includes(role));
-
-  if (!hasRequiredRoles) {
-    // Redirect to unauthorized page or home
-    router.navigate(['/']);
-    return false;
+  const token = keycloakAuthService.getToken();
+  if (token) {
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      const realmRoles = payload.realm_access?.roles || [];
+      const resourceRoles = payload.resource_access?.[keycloakAuthService['clientId']]?.roles || [];
+      const userRoles = [...realmRoles, ...resourceRoles];
+      
+      const hasRequiredRoles = requiredRoles.every(role => userRoles.includes(role));
+      
+      if (!hasRequiredRoles) {
+        // Redirect to unauthorized page or dashboard
+        router.navigate(['/dashboard']);
+        return false;
+      }
+    } catch {
+      return true;
+    }
   }
 
   return true;

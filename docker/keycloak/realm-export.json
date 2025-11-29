@@ -9,6 +9,23 @@
   "duplicateEmailsAllowed": false,
   "resetPasswordAllowed": true,
   "editUsernameAllowed": false,
+  "actionTokenGeneratedByUserLifespan": 300,
+  "actionTokenGeneratedByAdminLifespan": 43200,
+  "loginTheme": "basis-theme",
+  "attributes": {
+    "frontendUrl": "http://localhost:4200",
+    "_browser_header.contentSecurityPolicy": "frame-src 'self'; frame-ancestors 'self'; object-src 'none';",
+    "actionTokenGeneratedByUserLifespan": "43200",
+    "actionTokenGeneratedByAdminLifespan": "43200",
+    "webAuthnPolicyRpEntityName": "Basis Project",
+    "webAuthnPolicySignatureAlgorithms": "ES256",
+    "cibaBackchannelTokenDeliveryMode": "poll",
+    "cibaAuthRequestedUserHint": "login_hint",
+    "cibaInterval": "5",
+    "cibaExpiresIn": "120",
+    "parRequestUriLifespan": "60",
+    "frontendUrl": "http://localhost:4200"
+  },
   "bruteForceProtected": true,
   "permanentLockout": false,
   "maxFailureWaitSeconds": 900,
@@ -30,10 +47,22 @@
       "clientId": "basis-frontend",
       "enabled": true,
       "publicClient": true,
+      "directAccessGrantsEnabled": true,
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directGrantsOnly": false,
       "redirectUris": [
         "http://localhost:4200/*",
-        "http://localhost/*"
+        "http://localhost/*",
+        "http://localhost:8080/*",
+        "http://localhost:8180/*"
       ],
+      "attributes": {
+        "post.logout.redirect.uris": "http://localhost:4200/auth/login",
+        "backchannel.logout.url": "",
+        "backchannel.logout.revoke.offline.tokens": "false",
+        "backchannel.logout.session.required": "true"
+      },
       "webOrigins": [
         "http://localhost:4200",
         "http://localhost"

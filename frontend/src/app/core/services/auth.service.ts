@@ -1,82 +1,98 @@
-import { Injectable } from '@angular/core';
-import { KeycloakService } from 'keycloak-angular';
-import { KeycloakProfile } from 'keycloak-js';
-import { from, Observable } from 'rxjs';
+import { Injectable, inject } from '@angular/core';
+import { Router } from '@angular/router';
+import { Observable } from 'rxjs';
+import { KeycloakAuthService, KeycloakUser, LoginRequest, TokenResponse } from './keycloak-auth.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-  constructor(private keycloakService: KeycloakService) {}
+  private keycloakAuthService = inject(KeycloakAuthService);
+  private router = inject(Router);
 
-  public getLoggedUser(): KeycloakProfile | undefined {
-    try {
-      const userProfile = this.keycloakService.getKeycloakInstance().profile;
-      return userProfile ?? undefined;
-    } catch (e) {
-      console.error('Failed to load user profile', e);
-      return undefined;
-    }
+  public getLoggedUser(): KeycloakUser | null {
+    return this.keycloakAuthService.getCurrentUser();
   }
 
   public isLoggedIn(): boolean {
-    return this.keycloakService.isLoggedIn();
+    return this.keycloakAuthService.isAuthenticated();
   }
 
-  public login(): void {
-    this.keycloakService.login();
+  public login(credentials: LoginRequest): Observable<TokenResponse> {
+    return this.keycloakAuthService.login(credentials);
   }
+
 
   public logout(): void {
-    this.keycloakService.logout();
+    this.keycloakAuthService.logout().subscribe({
+      next: () => {
+        this.router.navigate(['/auth/login']);
+      },
+      error: (error) => {
+        console.error('Logout error:', error);
+        // Even on error, navigate to login
+        this.router.navigate(['/auth/login']);
+      }
+    });
   }
 
-  public register(): void {
-    this.keycloakService.register();
-  }
-
-  public getUserRoles(): string[] {
-    return this.keycloakService.getUserRoles();
-  }
-
-  public hasRole(role: string): boolean {
-    return this.getUserRoles().includes(role);
-  }
-
-  public getToken(): Observable<string> {
-    return from(this.keycloakService.getToken());
-  }
-
-  public async loadUserProfile(): Promise<KeycloakProfile> {
-    return this.keycloakService.loadUserProfile();
+  public getToken(): string | null {
+    return this.keycloakAuthService.getToken();
   }
 
   public getUsername(): string | undefined {
-    try {
-      if (!this.isLoggedIn()) {
-        return undefined;
-      }
-      return this.keycloakService.getUsername();
-    } catch (error) {
-      return undefined;
-    }
+    const user = this.getLoggedUser();
+    return user?.preferred_username;
   }
 
   public getUserId(): string | undefined {
-    const tokenParsed = this.keycloakService.getKeycloakInstance().tokenParsed;
-    return tokenParsed?.sub;
+    const user = this.getLoggedUser();
+    return user?.sub;
   }
 
   public getEmail(): string | undefined {
-    const tokenParsed = this.keycloakService.getKeycloakInstance().tokenParsed;
-    return tokenParsed ? (tokenParsed as any).email : undefined;
+    const user = this.getLoggedUser();
+    return user?.email;
   }
 
   public isTokenExpired(): boolean {
-    return this.keycloakService.isTokenExpired();
+    return !this.keycloakAuthService.isAuthenticated();
   }
 
-  public updateToken(minValidity: number = 5): Observable<boolean> {
-    return from(this.keycloakService.updateToken(minValidity));
+  public refreshToken(): Observable<TokenResponse> {
+    return this.keycloakAuthService.refreshToken();
+  }
+
+  public hasRole(role: string): boolean {
+    const token = this.getToken();
+    if (!token) return false;
+
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      const realmRoles = payload.realm_access?.roles || [];
+      const resourceRoles = payload.resource_access?.[this.keycloakAuthService['clientId']]?.roles || [];
+      const userRoles = [...realmRoles, ...resourceRoles];
+      
+      return userRoles.includes(role);
+    } catch (error) {
+      console.error('Error parsing token for roles:', error);
+      return false;
+    }
+  }
+
+  public getUserRoles(): string[] {
+    const token = this.getToken();
+    if (!token) return [];
+
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      const realmRoles = payload.realm_access?.roles || [];
+      const resourceRoles = payload.resource_access?.[this.keycloakAuthService['clientId']]?.roles || [];
+      
+      return [...realmRoles, ...resourceRoles];
+    } catch (error) {
+      console.error('Error parsing token for roles:', error);
+      return [];
+    }
   }
 }
