@@ -12,8 +12,8 @@
   "actionTokenGeneratedByUserLifespan": 300,
   "actionTokenGeneratedByAdminLifespan": 43200,
   "loginTheme": "basis-theme",
+  "emailTheme": "basis-theme",
   "attributes": {
-    "frontendUrl": "http://localhost:4200",
     "_browser_header.contentSecurityPolicy": "frame-src 'self'; frame-ancestors 'self'; object-src 'none';",
     "actionTokenGeneratedByUserLifespan": "43200",
     "actionTokenGeneratedByAdminLifespan": "43200",
@@ -23,8 +23,7 @@
     "cibaAuthRequestedUserHint": "login_hint",
     "cibaInterval": "5",
     "cibaExpiresIn": "120",
-    "parRequestUriLifespan": "60",
-    "frontendUrl": "http://localhost:4200"
+    "parRequestUriLifespan": "60"
   },
   "bruteForceProtected": true,
   "permanentLockout": false,
