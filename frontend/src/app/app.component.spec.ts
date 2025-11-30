@@ -1,11 +1,11 @@
 import { TestBed } from '@angular/core/testing';
 import { AppComponent } from './app.component';
 import { Router } from '@angular/router';
-import { KeycloakService } from 'keycloak-angular';
+import { KeycloakAuthService } from './core/services/keycloak-auth.service';
 
 describe('AppComponent', () => {
   let mockRouter: jasmine.SpyObj<Router>;
-  let mockKeycloakService: jasmine.SpyObj<KeycloakService>;
+  let mockKeycloakAuthService: jasmine.SpyObj<KeycloakAuthService>;
 
   beforeEach(async () => {
     mockRouter = jasmine.createSpyObj('Router', ['navigate'], {
@@ -13,13 +13,15 @@ describe('AppComponent', () => {
       url: '/'
     });
     
-    mockKeycloakService = jasmine.createSpyObj('KeycloakService', ['isLoggedIn']);
+    mockKeycloakAuthService = jasmine.createSpyObj('KeycloakAuthService', ['isAuthenticated', 'login', 'getCurrentUser']);
+    mockKeycloakAuthService.isAuthenticated.and.returnValue(false);
+    mockKeycloakAuthService.getCurrentUser.and.returnValue(null);
 
     await TestBed.configureTestingModule({
       imports: [AppComponent],
       providers: [
         { provide: Router, useValue: mockRouter },
-        { provide: KeycloakService, useValue: mockKeycloakService }
+        { provide: KeycloakAuthService, useValue: mockKeycloakAuthService }
       ]
     }).compileComponents();
   });
