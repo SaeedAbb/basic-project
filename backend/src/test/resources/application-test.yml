@@ -23,3 +23,6 @@ logging:
     com.basis: DEBUG
     org.springframework.web: DEBUG
     org.hibernate.SQL: DEBUG
+
+# Disable OAuth2 security for tests
+spring.security.oauth2.resourceserver.jwt.enabled: false

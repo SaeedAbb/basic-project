@@ -37,6 +37,22 @@ spring:
     date-format: yyyy-MM-dd'T'HH:mm:ss.SSS'Z'
     time-zone: UTC
 
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${KEYCLOAK_ISSUER_URI:http://localhost:8180/realms/basis-realm}
+          jwk-set-uri: ${KEYCLOAK_JWK_SET_URI:http://localhost:8180/realms/basis-realm/protocol/openid-connect/certs}
+
+keycloak:
+  realm: ${KEYCLOAK_REALM:basis-realm}
+  admin:
+    server-url: ${KEYCLOAK_ADMIN_SERVER_URL:http://localhost:8180}
+    realm: ${KEYCLOAK_ADMIN_REALM:master}
+    username: ${KEYCLOAK_ADMIN_USERNAME:admin}
+    password: ${KEYCLOAK_ADMIN_PASSWORD:admin}
+    client-id: ${KEYCLOAK_ADMIN_CLIENT_ID:admin-cli}
+
 server:
   port: ${SERVER_PORT:8080}
   error:
